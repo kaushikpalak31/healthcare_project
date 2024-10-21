@@ -12,9 +12,10 @@ app.use(cors());
 
 app.use(errorHandler);
 //routes below
-app.get('./'(req,res)=>{
-    res.send("working")
+app.get('/'(req,res)=>{
+    res.send("working");
 })
+app.listen(port)
 
 
 
