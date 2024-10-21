@@ -12,10 +12,12 @@ app.use(cors());
 
 app.use(errorHandler);
 //routes below
-app.get('/'(req,res)=>{
+app.get('/',(req,res)=>{
     res.send("working");
 })
-app.listen(port)
+app.listen(port,()=>{
+    console.log("server working on port5000");
+})
 
 
 
