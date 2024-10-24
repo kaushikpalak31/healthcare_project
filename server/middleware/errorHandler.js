@@ -22,13 +22,17 @@ const errorHandler = (err,req,res,next)=>{
                     message: err.message,
                     stackTrace: err.stack,
                 });
+                break;
                 case constants.SERVER_ERROR:
                     res.json({
-                        title: "Server Errorzd",
+                        title: "Server Error",
                         message: err.message,
                         stackTrace: err.stack,
                     });
-
-
+                    break;
+                    default:
+                        console.log("No Error,All good");
+                        break;
     }
-}
+};
+module.exports = errorHandler;

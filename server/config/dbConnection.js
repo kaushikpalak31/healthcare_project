@@ -12,4 +12,5 @@ const connectDb = async () => {
         console.log(err);
         process.exit(1);   //1-fail , 0-pass
     }
-}
+};
+module.exports=connectDb;

@@ -1,30 +1,58 @@
-//framework configuration
-const express = require('express');
-const connectDb = require("./config/dbConnection");
-const errorHandler = require("./middleware/errorHandler");     //handles error
-const cors = require("cors");        //puts restriction for outside source
- 
-//env file config
+const express= require("express");
+const connectDb= require("./config/dbConnection");
+const errorHandler = require("./middlewares/errorHandler");
+const cors= require ("cors");
+const hbs = require("hbs");
+const path = require("path");
+
+// env file config
 const dotenv = require("dotenv");
-dotenv.config(); //enabling the env file
+dotenv.config();
 
 connectDb();
 const app = express();
-const port = process.env.PORT || 5000;
+const port= process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
 
-//error handling middleware
+app.use("/api/register",require("./routes/userRoutes"));
+
+//Error handling
 app.use(errorHandler);
-//routes below
-app.get('/',(req,res)=>{
-    res.send("working");
-})
-app.listen(port,()=>{
-    console.log("server working on port5000");
-})
 
-module.exports = connectDb;
+// using hbs
+app.set('view engine','hbs');
 
 
+//Routes below
+app.get("/",(req,res)=>{
+    res.send("working")
+});
+
+hbs.registerPartials(path.join(__dirname, '/views/partials'));
+
+app.get("/home",(req,res)=>{
+    // let user =  user.findone({id:})
+    res.render("home",{ 
+        username:"Poorva",
+        age : 20,
+    })
+});
+
+
+app.get("/user",(req,res)=>{
+    // let user =  user.findone({id:})
+    const users = [
+        { username: "Palak", age: 20 },
+        { username: "Namit", age: 22 },
+        { username: "Jiva", age: 21 }
+    ];
+    
+    res.render("user",{users})
+});
+
+
+app.listen(port, () => {
+    console.log(`Server is running on port http://localhost:${port}`);
+});
