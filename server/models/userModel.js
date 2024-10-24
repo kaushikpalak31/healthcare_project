@@ -7,8 +7,9 @@ const userSchema = moongose.Schema(
             require: [true,"Please add your name"],
         },
         password: {
-            type: ,
-            require: []
+            type: Integer,
+            require: [true,"Please add a password"],
+           
         },
         email: {
             type:String,
@@ -16,5 +17,7 @@ const userSchema = moongose.Schema(
             unique:["Email already existed"]
         }
 
+
     },
 )
+module.exports = moongose.model("User",userSchema);
