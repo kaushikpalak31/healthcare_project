@@ -2,19 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <body>
-    {{>header}}
-    <h1><h1>User List</h1>
+    {{> header}} 
     <ul>
-        {{#each users}}
+        {{#each users as |user|}}
         <li>
-            <strong>Username:</strong> {{username}} <br>
-            <strong>Age:</strong> {{age}}
+            {{user.username}}
         </li>
         {{/each}}
-    </ul></h1>
+    </ul>
 </body>
 </html>

@@ -1,23 +1,39 @@
 const mongoose = require("mongoose");
-
-const userSchema = moongose.Schema(
-    {
-        name: {
-            type:String,
-            require: [true,"Please add your name"],
-        },
-        password: {
-            type: Integer,
-            require: [true,"Please add a password"],
-           
-        },
-        email: {
-            type:String,
-            require:[true,"Please add an email"],
-            unique:["Email already existed"]
-        }
-
-
+const userSchema = mongoose.Schema({
+    firstName:{
+        type : String , 
+        require : [ true , "please add your name"],
     },
-)
-module.exports = moongose.model("User",userSchema);
+    lastName:{
+        type : String , 
+        require : [ true , "please add your last name"],
+    },
+    email:{
+        type : String , 
+        require : [ true , "please add your last name"],
+    },
+    age:{
+        type : Number , 
+        require : [ true , "please add your age"],
+    },
+    bloodGroup:{
+        type : String , 
+        require : [ true , "please add your bloodgroup"],
+    },
+    gender:{
+        type : String , 
+        require : [ true , "please add your gender"],
+    },
+    phoneNumber:{
+        type : Number , 
+        require : [ true , "please add your phone number"],
+    },
+    password:{
+        type : String,
+        require : [ true , "please add your passwprd"],
+    }
+},
+{
+    timestamps : true ,
+});
+module.exports = mongoose.model("User" , userSchema);
