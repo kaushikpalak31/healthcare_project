@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const Doctor = require("../models/doctorDetailsModels");
+const Doctor = require("../models/doctorDetailsModel");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
 
@@ -44,22 +44,24 @@ const registerDoctor = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Invalid user data");
     }
-    const getAllDoctors = asyncHandler(async (req, res) => {
-        const doctors = await Doctor.find();
-        res.status(200).json(doctors);
-      });
-      
-      // Get doctor by ID
-      const getDoctorById = asyncHandler(async (req, res) => {
-        const doctor = await Doctor.findById(req.params.id);
-      
-        if (!doctor) {
-          res.status(404);
-          throw new Error("Doctor not found");
-        }
-      
-        res.status(200).json(doctor);
-      });
-    });
+});
 
-module.exports = { registerDoctor ,getAllDoctors,getDoctorById};
+// Uncomment and export these functions if needed:
+
+// const getAllDoctors = asyncHandler(async (req, res) => {
+//     const doctors = await Doctor.find();
+//     res.status(200).json(doctors);
+// });
+
+// const getDoctorById = asyncHandler(async (req, res) => {
+//     const doctor = await Doctor.findById(req.params.id);
+
+//     if (!doctor) {
+//         res.status(404);
+//         throw new Error("Doctor not found");
+//     }
+
+//     res.status(200).json(doctor);
+// });
+
+module.exports = { registerDoctor }; // Add other functions here if needed

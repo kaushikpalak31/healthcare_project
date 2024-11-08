@@ -1,81 +1,100 @@
+
 const express = require("express");
 const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middlewares/errorHandler");
 const cors = require("cors");
 const hbs = require("hbs");
 const path = require("path");
-const multer = require("multer"); // Require multer
-
-// env file config
 const dotenv = require("dotenv");
+const multer = require("multer");
+const fs = require("fs");
 dotenv.config();
 
+// Database connection
 connectDb();
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "uploads/");
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Multer setup: Configure where to store files and what naming convention to use
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Specify the folder where uploaded files will be stored
-    cb(null, "uploads/");  // make sure the 'uploads' folder exists
-  },
-  filename: (req, file, cb) => {
-    // Specify the filename to store the file with
-    cb(null, Date.now() + path.extname(file.originalname));  // Use timestamp for uniqueness
-  }
-});
-
-// Initialize multer with the storage configuration
-const upload = multer({ storage: storage });
-
-// Middleware for parsing JSON and handling CORS
-app.use(express.json());
+// Middleware setup
 app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Static middleware to serve images
 
-// API Route for registering with file upload functionality
-app.post("/api/register", upload.single("file"), (req, res) => {
-  // 'file' is the name of the file input field in the form
-  if (!req.file) {
-    return res.status(400).send("No file uploaded");
-  }
-  res.send({
-    message: "File uploaded successfully",
-    file: req.file,
-  });
+// Handlebars view engine setup
+app.set("view engine", "hbs");
+hbs.registerPartials(path.join(__dirname, "/views/partials"));
+
+const doctorRoutes = require("./routes/doctorRoutes");
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/users", userRoutes);
+
+app.use(errorHandler); // Error handling middleware
+
+// Load existing images on server start
+let imageUrls = [];
+const imageFolderPath = path.join(__dirname, 'uploads');
+fs.readdir(imageFolderPath, (err, files) => {
+    if (err) {
+        console.error("Error reading files on startup:", err);
+    } else {
+        imageUrls = files.map(file => `/uploads/${file}`);
+    }
 });
 
-// Error handling middleware
-app.use(errorHandler);
-
-// Using hbs as the view engine
-app.set('view engine', 'hbs');
-
-// Register partials for hbs views
-hbs.registerPartials(path.join(__dirname, '/views/partials'));
-
-// Routes
+// Basic Routes
 app.get("/", (req, res) => {
-  res.send("working");
+    res.send("Server is working");
 });
 
 app.get("/home", (req, res) => {
-  res.render("home", { 
-    username: "Poorva", 
-    age: 20 
-  });
+    res.render("home", { 
+        username: "Poorva",
+        age: 20,
+    });
 });
 
 app.get("/user", (req, res) => {
-  const users = [
-    { username: "Palak", age: 20 },
-    { username: "Namit", age: 22 },
-    { username: "Jiva", age: 21 }
-  ];
-  
-  res.render("user", { users });
+    const users = [
+        { username: "Poorva", age: 20 },
+        { username: "Ashish", age: 22 },
+        { username: "Divyam", age: 21 }
+    ];
+    res.render("user", { users });
 });
 
+app.post("/profile", upload.single("avatar"), function(req, res, next) {
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.");
+    }
+    console.log(req.body);
+    console.log(req.file);
+
+    const fileName = req.file.filename;
+    const imageUrl = `/uploads/${fileName}`;
+    imageUrls.push(imageUrl); // Store the new image URL in the array
+    return res.render("gallery", {
+        imageUrls: imageUrls
+    });
+});
+
+app.get("/gallery", (req, res) => {
+    res.render("gallery", { images: imageUrls }); // Use the loaded image URLs
+});
+
+// Start server
 app.listen(port, () => {
-  console.log(`Server is running on port http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port}`);
 });
